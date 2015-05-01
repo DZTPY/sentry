@@ -142,8 +142,11 @@ class Event(Model):
                 cls = get_interface(key)
             except ValueError:
                 continue
-
-            value = safe_execute(cls.to_python, data)
+            if key == 'sentry.interfaces.Message':
+                extra = self.data.get('extra', {})
+                value = safe_execute(cls.to_python, data, extra)
+            else:
+                value = safe_execute(cls.to_python, data)
             if not value:
                 continue
 

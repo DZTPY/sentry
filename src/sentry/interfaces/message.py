@@ -30,9 +30,8 @@ class Message(Interface):
     >>> }
     """
     @classmethod
-    def to_python(cls, data):
+    def to_python(cls, data, extra={}):
         assert data.get('message')
-
         kwargs = {
             'message': trim(data['message'], 2048)
         }
@@ -42,10 +41,20 @@ class Message(Interface):
         else:
             kwargs['params'] = ()
 
+        position = ""
+        if extra:
+            position = "%s%s%s" % (extra.get('filename'), extra.get('pathname'), extra.get('lineno'))
+        kwargs['position'] = position
+
         return cls(**kwargs)
 
     def get_path(self):
         return 'sentry.interfaces.Message'
 
     def get_hash(self):
-        return [self.message]
+        if self.params:
+            return [self.message]
+        if self.position:
+            return [self.position]
+        else:
+            return [self.message]
