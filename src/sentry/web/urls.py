@@ -82,10 +82,14 @@ if settings.DEBUG:
             sentry.web.frontend.debug.mail.new_note),
     )
 
+from .patch import get_daily_info
+
+
 urlpatterns += patterns('',
     # Store endpoints first since they are the most active
     url(r'^api/store/$', api.StoreView.as_view(),
         name='sentry-api-store'),
+    url(r'^daily/$', get_daily_info, name='custom-daily'),
     url(r'^api/(?P<project_id>[\w_-]+)/store/$', api.StoreView.as_view(),
         name='sentry-api-store'),
 
